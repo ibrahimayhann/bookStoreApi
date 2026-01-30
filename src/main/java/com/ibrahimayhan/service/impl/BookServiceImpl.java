@@ -1,0 +1,183 @@
+package com.ibrahimayhan.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
+import com.ibrahimayhan.dto.BookRequestDto;
+import com.ibrahimayhan.dto.BookResponseDto;
+import com.ibrahimayhan.entities.Author;
+import com.ibrahimayhan.entities.Book;
+import com.ibrahimayhan.entities.Publisher;
+import com.ibrahimayhan.repository.AuthorRepository;
+import com.ibrahimayhan.repository.BookRepository;
+import com.ibrahimayhan.repository.PublisherRepository;
+import com.ibrahimayhan.service.IBookService;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class BookServiceImpl implements IBookService{
+
+	private final BookRepository bookRepository;
+	private final AuthorRepository authorRepository;
+	private final PublisherRepository publisherRepository;
+
+	
+	@Override
+	public List<BookResponseDto> getAllBooks() {
+		List<Book> bookList=bookRepository.findAll();
+		
+		List<BookResponseDto> bookDtoList=new ArrayList<>();
+		
+		if(bookList!= null&& !bookList.isEmpty()) {
+			for (Book book : bookList) {
+				BookResponseDto bookDto =new BookResponseDto();
+				BeanUtils.copyProperties(book, bookDto);
+				bookDto.setAuthorNameSurname(book.getAuthor().getAuthorNameSurname());
+				bookDto.setPublisherName(book.getPublisher().getPublisherName());
+				bookDtoList.add(bookDto);
+			}
+		}
+		return bookDtoList;
+	}
+	
+	@Override
+	public List<BookResponseDto> getBooksStartWith(String prefix) {
+
+	    return bookRepository.findAll()
+	            .stream()
+	            .filter(book -> book.getTitle() != null)
+	            .filter(book -> book.getTitle().toUpperCase().startsWith(prefix.toUpperCase()))
+	            .map(book -> {
+	                BookResponseDto dto = new BookResponseDto();
+
+	                BeanUtils.copyProperties(book, dto);
+
+	                if (book.getAuthor() != null && book.getPublisher()!= null) {
+	                    dto.setAuthorNameSurname(book.getAuthor().getAuthorNameSurname());
+	                    dto.setPublisherName(book.getPublisher().getPublisherName());
+	                }
+
+	                return dto;
+	            })
+	            .toList();
+	}
+
+
+	
+
+	private String normalizeName(String name) {
+		if(name==null) {
+			return null;
+		}
+		return name.trim().toLowerCase().replaceAll("\\s+", " ");
+	}
+
+	
+	
+	
+	
+	private Author findOrCreateAuthor(String authorNameSurname) {
+		
+		String normalizedName=normalizeName(authorNameSurname);
+		
+		return authorRepository.findByAuthorNameSurname(normalizedName).orElseGet(()->{
+			Author author=new Author();
+			author.setAuthorNameSurname(normalizedName);
+			return authorRepository.save(author);
+		});
+	}
+	
+	
+	
+	private Publisher findOrCreatePublisher(String publisherName) {
+		
+		String normalizedName=normalizeName(publisherName);
+		
+		return publisherRepository.findByPublisherName(normalizedName).orElseGet(()->{
+			Publisher publisher =new Publisher();
+			publisher.setPublisherName(normalizedName);
+			return publisherRepository.save(publisher);
+		});
+		
+	}
+	
+	
+	
+	@Override
+	public BookResponseDto saveBook(BookRequestDto request) {
+		
+		Book book=new Book();
+		
+		BeanUtils.copyProperties(request, book);
+
+		book.setAuthor(findOrCreateAuthor(request.getAuthorNameSurname()));
+		book.setPublisher(findOrCreatePublisher(request.getPublisherName()));
+		
+		Book savedBook=bookRepository.save(book);
+		BookResponseDto bookResponseDto=new BookResponseDto();
+		BeanUtils.copyProperties(savedBook, bookResponseDto);
+		
+		bookResponseDto.setPublisherName(book.getPublisher().getPublisherName());
+		bookResponseDto.setAuthorNameSurname(book.getAuthor().getAuthorNameSurname());
+		return bookResponseDto;
+	}
+
+	@Override
+	public List<BookResponseDto> getBooksPublishedAfter(int year) {
+		
+		List<BookResponseDto> dtoBooksList=new ArrayList<>();
+		
+		List<Book> books=bookRepository.findBooksPublishedAfter(year);
+		if(books.isEmpty()||books==null)
+			return null;
+		for (Book book : books) {
+			BookResponseDto dtoBook=new BookResponseDto();
+			BeanUtils.copyProperties(book, dtoBook);
+			dtoBooksList.add(dtoBook);
+		}
+		return dtoBooksList;
+	}
+
+	@Transactional
+	@Override
+	public BookResponseDto updateBook(Long id, BookRequestDto requestDto) {
+		
+		Optional<Book> optioanlBook=bookRepository.findById(id);
+		if(optioanlBook.isEmpty()) {return null;}
+		
+		Book bookFromDb=optioanlBook.get();
+		BeanUtils.copyProperties(requestDto,bookFromDb);
+		Author author=findOrCreateAuthor(requestDto.getAuthorNameSurname());
+		Publisher publisher=findOrCreatePublisher(requestDto.getPublisherName());
+		bookFromDb.setAuthor(author);
+		bookFromDb.setPublisher(publisher);
+		Book savedBook=bookRepository.save(bookFromDb);
+		BookResponseDto bookResponseDto=new BookResponseDto();
+		BeanUtils.copyProperties(savedBook, bookResponseDto);
+		bookResponseDto.setPublisherName(savedBook.getPublisher().getPublisherName());
+		bookResponseDto.setAuthorNameSurname(savedBook.getAuthor().getAuthorNameSurname());
+		return bookResponseDto;
+	}
+
+	@Transactional
+	@Override
+	public void deleteBook(Long id) {
+		Book book = bookRepository.findById(id)
+	            .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+	    bookRepository.delete(book);
+		
+	}
+	
+	
+	
+	
+}

@@ -1,0 +1,37 @@
+package com.ibrahimayhan.dto;
+
+import java.math.BigDecimal;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookRequestDto {
+	
+
+	@NotEmpty(message = "Title cannot be empty!")
+	private String title;
+	
+	
+	private BigDecimal price;
+	
+	
+	@Size(min = 13,max = 13)
+	private String isbn13;
+	
+	@NotEmpty
+	private String publisherName;
+	
+	
+	private int publishYear;
+	
+	@NotEmpty
+	private String authorNameSurname;
+}
