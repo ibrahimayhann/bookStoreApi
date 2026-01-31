@@ -95,7 +95,10 @@ Foreign key’ler Book tablosunda tutuluyor
 
 - Feign Client kullanılarak Google Books API entegrasyonu yapılmıştır
 - Kitap adına göre arama yapılabilmektedir
-- API sonucu aşağıdaki formatta dönülmektedir:
+ 
+### API sonucu aşağıdaki formatta dönülmektedir:
+
+```text
 
 {
   "title": "Effective Java",
@@ -104,7 +107,7 @@ Foreign key’ler Book tablosunda tutuluyor
   "publisherName": "Addison-Wesley Professional",
   "authorNameSurname": "Joshua Bloch"
 }
-
+```
 
 API Dokümantasyonu
 
@@ -116,7 +119,8 @@ API Dokümantasyonu
 
 Testler
 
-Unit Testler:
+Unit Testler
+
 Service katmanı JUnit 5 ve Mockito kullanılarak test edilmiştir
 
 Repository katmanı mocklanarak gerçek unit test yaklaşımı uygulanmıştır
@@ -124,7 +128,7 @@ Repository katmanı mocklanarak gerçek unit test yaklaşımı uygulanmıştır
 İş mantığı veritabanından bağımsız olarak doğrulanmıştır
 
 
-Manuel Testler:
+Manuel Testler
 
 Tüm endpoint’ler Postman üzerinden test edilmiştir
 
@@ -132,7 +136,10 @@ CRUD işlemleri, filtreleme ve harici API entegrasyonu sorunsuz çalışmaktadı
 
 Uygulama çalışma zamanında hata vermemektedir
 
-Örnek İstek (Request) Yapısı
+### Örnek İstek (Request) Yapısı
+
+```text
+
 {
   "title": "kürk mantolu madonna",
   "price": 45.0,
@@ -141,32 +148,23 @@ Uygulama çalışma zamanında hata vermemektedir
   "publishYear": 2022,
   "authorNameSurname": "sabahattin ali"
 }
+```
 
-
-Notlar:
-
-isbn13 alanı benzersizdir
-
-publishYear, kitabın basım yılını ifade eder (ilk yayın yılı değildir)
-
-Veritabanı olarak PostgreSQL kullanılmaktadır
-
-Case dokümanına uygun tablo yapısı uygulanmıştır
-
-Metin bazlı alanlar normalize edilerek saklanmaktadır
 
 
 Proje Durumu
 
-Case gereksinimlerinin tamamı karşılanmıştır
+-Case gereksinimlerinin tamamı karşılanmıştır
 
-Swagger aktif ve çalışır durumdadır
+-Swagger aktif ve çalışır durumdadır
 
-Unit testler yazılmıştır
+-Unit testler yazılmıştır
 
-Postman testleri başarıyla tamamlanmıştır
+-Postman testleri başarıyla tamamlanmıştır
 
-Proje teknik değerlendirmeye hazırdır
+-Proje teknik değerlendirmeye hazırdır
+
+
 
 
 Geliştirici
