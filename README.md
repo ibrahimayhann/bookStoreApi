@@ -33,8 +33,11 @@ Case dokümanında belirtilen tüm gereksinimler eksiksiz olarak tamamlanmış, 
 - Service ve Controller package'nın içinde  her servis için metot imzalarının bulunduğu interface ve impl package vardır bu package içinde implementasyonlar bulunur.(Detaylı gösterimi aşağıya ekledim)
 - service
  ├── IBookService
+
  ├── IAuthorService
+ 
  ├── IPublisherService
+ 
  └── impl
      ├── BookServiceImpl
      ├── AuthorServiceImpl
@@ -42,8 +45,11 @@ Case dokümanında belirtilen tüm gereksinimler eksiksiz olarak tamamlanmış, 
 
 controller
  ├── BookController
+ 
  ├── AuthorController
+ 
  ├── PublisherController
+ 
  └── impl
      ├── BookControllerImpl
      ├── AuthorControllerImpl
