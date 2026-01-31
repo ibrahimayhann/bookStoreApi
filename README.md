@@ -31,13 +31,13 @@ Case dokümanında belirtilen tüm gereksinimler eksiksiz olarak tamamlanmış, 
 - Service katmanında gerçek unit testler
 - Case-insensitive ve normalize edilmiş veri yönetimi
 - Service ve Controller package'nın içinde  her servis için metot imzalarının bulunduğu interface ve impl package vardır bu package içinde implementasyonlar bulunur.(Detaylı gösterimi aşağıya ekledim)
-- service
- ├── IBookService
+ ### Paket Yapısı
 
+```text
+service
+ ├── IBookService
  ├── IAuthorService
- 
  ├── IPublisherService
- 
  └── impl
      ├── BookServiceImpl
      ├── AuthorServiceImpl
@@ -45,20 +45,13 @@ Case dokümanında belirtilen tüm gereksinimler eksiksiz olarak tamamlanmış, 
 
 controller
  ├── BookController
- 
  ├── AuthorController
- 
  ├── PublisherController
- 
  └── impl
      ├── BookControllerImpl
      ├── AuthorControllerImpl
      └── PublisherControllerImpl
- 
-
----
-
-
+```
 
 ### Entityler
 - Book
