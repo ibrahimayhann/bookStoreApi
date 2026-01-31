@@ -26,12 +26,12 @@ public class BookRequestDto {
 	@Size(min = 13,max = 13)
 	private String isbn13;
 	
-	@NotEmpty
+	@NotEmpty(message = "Publisher name cannot be emty!")
 	private String publisherName;
 	
 	
 	private int publishYear;
 	
-	@NotEmpty
+	@NotEmpty(message = "Author name cannot be emty!")
 	private String authorNameSurname;
 }

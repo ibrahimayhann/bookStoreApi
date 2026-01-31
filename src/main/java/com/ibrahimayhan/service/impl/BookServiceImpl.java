@@ -30,6 +30,7 @@ public class BookServiceImpl implements IBookService{
 	private final PublisherRepository publisherRepository;
 
 	
+	//tüm kitapları döner
 	@Override
 	public List<BookResponseDto> getAllBooks() {
 		List<Book> bookList=bookRepository.findAll();
@@ -48,6 +49,7 @@ public class BookServiceImpl implements IBookService{
 		return bookDtoList;
 	}
 	
+	//kullanıcıdan gelen string prefix ile kitap adına  göre filtreleme yapıp uygun kitapları döner 
 	@Override
 	public List<BookResponseDto> getBooksStartWith(String prefix) {
 
@@ -70,9 +72,28 @@ public class BookServiceImpl implements IBookService{
 	            .toList();
 	}
 
+	//Kitap kaydeder , fazla şişirmemek ve okunabilirlik artırmak için 3 tane yardımcı metodu  var 
+		@Override
+		public BookResponseDto saveBook(BookRequestDto request) {
+			
+			Book book=new Book();
+			
+			BeanUtils.copyProperties(request, book);
+
+			book.setAuthor(findOrCreateAuthor(request.getAuthorNameSurname()));
+			book.setPublisher(findOrCreatePublisher(request.getPublisherName()));
+			
+			Book savedBook=bookRepository.save(book);
+			BookResponseDto bookResponseDto=new BookResponseDto();
+			BeanUtils.copyProperties(savedBook, bookResponseDto);
+			
+			bookResponseDto.setPublisherName(book.getPublisher().getPublisherName());
+			bookResponseDto.setAuthorNameSurname(book.getAuthor().getAuthorNameSurname());
+			return bookResponseDto;
+		}
 
 	
-
+	//findorcreateauthor ve findorcreatepublisher metotlarında string kısımları normalize eden yardımzı metot
 	private String normalizeName(String name) {
 		if(name==null) {
 			return null;
@@ -83,7 +104,8 @@ public class BookServiceImpl implements IBookService{
 	
 	
 	
-	
+	//Kitap save ederken request ile gelen string authora göre author repostoryde arama yapan 
+	//varsa eşleşen authoru , yoksa yeni author kaydedip kaydedilen authoru dönen yardımcı metot
 	private Author findOrCreateAuthor(String authorNameSurname) {
 		
 		String normalizedName=normalizeName(authorNameSurname);
@@ -96,7 +118,8 @@ public class BookServiceImpl implements IBookService{
 	}
 	
 	
-	
+	//Kitap save ederken request ile gelen string publisher a  göre publisher repostoryde  arama yapan 
+	//varsa eşleşen publisher , yoksa yeni publisher kaydedip kaydedilen publisher dönen yardımcı metot
 	private Publisher findOrCreatePublisher(String publisherName) {
 		
 		String normalizedName=normalizeName(publisherName);
@@ -109,27 +132,9 @@ public class BookServiceImpl implements IBookService{
 		
 	}
 	
-	
-	
-	@Override
-	public BookResponseDto saveBook(BookRequestDto request) {
-		
-		Book book=new Book();
-		
-		BeanUtils.copyProperties(request, book);
 
-		book.setAuthor(findOrCreateAuthor(request.getAuthorNameSurname()));
-		book.setPublisher(findOrCreatePublisher(request.getPublisherName()));
-		
-		Book savedBook=bookRepository.save(book);
-		BookResponseDto bookResponseDto=new BookResponseDto();
-		BeanUtils.copyProperties(savedBook, bookResponseDto);
-		
-		bookResponseDto.setPublisherName(book.getPublisher().getPublisherName());
-		bookResponseDto.setAuthorNameSurname(book.getAuthor().getAuthorNameSurname());
-		return bookResponseDto;
-	}
-
+	
+	//kullanıcıdan gelen year a göre filtreleme yapıp döner
 	@Override
 	public List<BookResponseDto> getBooksPublishedAfter(int year) {
 		
@@ -146,6 +151,10 @@ public class BookServiceImpl implements IBookService{
 		return dtoBooksList;
 	}
 
+	
+	
+	
+	//kullanıcıdan id ve bookrequesttdto alarak güncelleyip dtoresponse book olarak döner
 	@Transactional
 	@Override
 	public BookResponseDto updateBook(Long id, BookRequestDto requestDto) {
@@ -155,18 +164,26 @@ public class BookServiceImpl implements IBookService{
 		
 		Book bookFromDb=optioanlBook.get();
 		BeanUtils.copyProperties(requestDto,bookFromDb);
+		
+		
 		Author author=findOrCreateAuthor(requestDto.getAuthorNameSurname());
-		Publisher publisher=findOrCreatePublisher(requestDto.getPublisherName());
 		bookFromDb.setAuthor(author);
+
+		Publisher publisher=findOrCreatePublisher(requestDto.getPublisherName());
 		bookFromDb.setPublisher(publisher);
+		
 		Book savedBook=bookRepository.save(bookFromDb);
+		
 		BookResponseDto bookResponseDto=new BookResponseDto();
 		BeanUtils.copyProperties(savedBook, bookResponseDto);
+		
 		bookResponseDto.setPublisherName(savedBook.getPublisher().getPublisherName());
 		bookResponseDto.setAuthorNameSurname(savedBook.getAuthor().getAuthorNameSurname());
+		
 		return bookResponseDto;
 	}
 
+	
 	@Transactional
 	@Override
 	public void deleteBook(Long id) {

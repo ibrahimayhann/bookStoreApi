@@ -12,9 +12,13 @@ import com.ibrahimayhan.entities.Publisher;
 @Repository
 public interface PublisherRepository extends JpaRepository<Publisher,Long> {
 	
+	
 	Optional<Publisher> findByPublisherName(String publisherName);
 	
 	
+	
+	//yayınevlerini , yayınladıkları tüm kitaplar ve o kitapların yazarlarıyla beraber çekmek için query
+	//n+1 sorgu sorunuyla karşılaşıp performansı düşürmemeye çalıştığım query
 	@Query("""
 			SELECT DISTINCT p
 			FROM Publisher p

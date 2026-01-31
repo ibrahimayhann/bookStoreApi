@@ -40,12 +40,12 @@ public class GoogleBooksService {
 		dto.setTitle(volume.getTitle());
 		dto.setPublisherName(volume.getPublisher());
 		
-		//Author
+		//Author dto dönüşümü
 		if(volume.getAuthors() !=null && ! volume.getAuthors().isEmpty()) {
 			dto.setAuthorNameSurname(volume.getAuthors().get(0));
 		}
 		
-		//ISBN13
+		//ISBN13 dto dönüşümü
 		if (volume.getIndustryIdentifiers() != null) {
             volume.getIndustryIdentifiers().stream()
                     .filter(i -> "ISBN_13".equals(i.getType()))
@@ -53,7 +53,7 @@ public class GoogleBooksService {
                     .ifPresent(i -> dto.setISBN13(i.getIdentifier()));
         }
 		
-		//Price
+		//Price dto dönüşümü
 		if(item.getSaleInfo() != null &&item.getSaleInfo().getRetailPrice()!=null) {
 			dto.setPrice(BigDecimal.valueOf(item.getSaleInfo().getRetailPrice().getAmount()));
 		}

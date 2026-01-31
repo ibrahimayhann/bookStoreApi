@@ -1,4 +1,4 @@
-/*
+
 package com.ibrahimayhan.library_app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,16 +9,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ibrahimayhan.dto.BookRequestDto;
 import com.ibrahimayhan.dto.BookResponseDto;
@@ -29,12 +28,14 @@ import com.ibrahimayhan.repository.AuthorRepository;
 import com.ibrahimayhan.repository.BookRepository;
 import com.ibrahimayhan.repository.PublisherRepository;
 import com.ibrahimayhan.service.impl.BookServiceImpl;
-import com.ibrahimayhan.starter.LibraryAppApplication;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest(classes = {LibraryAppApplication.class})
-class LibraryAppApplicationTests {
 
-	 @Mock
+//@SpringBootTest(classes = {LibraryAppApplication.class})
+@ExtendWith(MockitoExtension.class)
+class BookServiceImplTest {
+
+	    @Mock
 	    private BookRepository bookRepository;
 
 	    @Mock
@@ -46,30 +47,26 @@ class LibraryAppApplicationTests {
 	    @InjectMocks
 	    private BookServiceImpl bookService;
 
-	    @BeforeEach
-	    void setup() {
-	        MockitoAnnotations.openMocks(this);
-	    }
 
-	    // 1️⃣ saveBook testi
+	    //saveBook testi
 	    @Test
 	    void testSaveBook() {
 	        BookRequestDto request = new BookRequestDto();
-	        request.setTitle("Spring Boot");
-	        request.setPrice(100.00);
-	        request.setAuthorNameSurname("Alice");
-	        request.setPublisherName("OReilly");
+	        request.setTitle("Kürk Mantolu Madonna");
+	        request.setPrice(new BigDecimal(200.00));
+	        request.setAuthorNameSurname("Sabahattin Ali");
+	        request.setPublisherName("İş bankası yayınları");
 
 	        Author savedAuthor = new Author();
-	        savedAuthor.setAuthorNameSurname("alice");
+	        savedAuthor.setAuthorNameSurname("Sabahattin Ali");
 
 	        Publisher savedPublisher = new Publisher();
-	        savedPublisher.setPublisherName("oreilly");
+	        savedPublisher.setPublisherName("İş bankası yayınları");
 
 	        Book savedBook = new Book();
-	        savedBook.setId(1L);
-	        savedBook.setTitle("Spring Boot");
-	        savedBook.setPrice(100.0);
+	        savedBook.setBookId(1L);
+	        savedBook.setTitle("Kürk Mantolu Madonna");
+	        savedBook.setPrice(new BigDecimal(200.0));
 	        savedBook.setAuthor(savedAuthor);
 	        savedBook.setPublisher(savedPublisher);
 
@@ -85,42 +82,46 @@ class LibraryAppApplicationTests {
 	        BookResponseDto response = bookService.saveBook(request);
 
 	        assertNotNull(response);
-	        assertEquals("Spring Boot", response.getTitle());
-	        assertEquals("alice", response.getAuthorNameSurname());
-	        assertEquals("oreilly", response.getPublisherName());
+	        assertEquals("Kürk Mantolu Madonna", response.getTitle());
+	        assertEquals("Sabahattin Ali", response.getAuthorNameSurname());
+	        assertEquals("İş bankası yayınları", response.getPublisherName());
 
 	        verify(authorRepository, times(1)).save(any(Author.class));
 	        verify(publisherRepository, times(1)).save(any(Publisher.class));
 	        verify(bookRepository, times(1)).save(any(Book.class));
 	    }
 
-	    // 2️⃣ getBooksStartWith testi
+	    //getBooksStartWith testi
 	    @Test
 	    void testGetBooksStartWith() {
+	    	
 	        Author author = new Author();
-	        author.setAuthorNameSurname("John Doe");
+	        author.setAuthorNameSurname("Victor Hugo");
+	        
+	        
 	        Publisher publisher = new Publisher();
-	        publisher.setPublisherName("Pearson");
+	        publisher.setPublisherName("Anonim Yayıncılık");
 
 	        Book book1 = new Book();
-	        book1.setTitle("Java Basics");
+	        book1.setTitle("Sefiller");
 	        book1.setAuthor(author);
 	        book1.setPublisher(publisher);
 
 	        Book book2 = new Book();
-	        book2.setTitle("Spring Boot");
+	        book2.setTitle("Bir idam mahkumunun son günü");
 	        book2.setAuthor(author);
 	        book2.setPublisher(publisher);
 
+	        //2 kitap db den return edilsin
 	        when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2));
 
-	        List<BookResponseDto> result = bookService.getBooksStartWith("Java");
+	        
+	        List<BookResponseDto> result = bookService.getBooksStartWith("Sef");
 
 	        assertEquals(1, result.size());
-	        assertEquals("Java Basics", result.get(0).getTitle());
-	        assertEquals("John Doe", result.get(0).getAuthorNameSurname());
-	        assertEquals("Pearson", result.get(0).getPublisherName());
+	        assertEquals("Sefiller", result.get(0).getTitle());
+	        assertEquals("Victor Hugo", result.get(0).getAuthorNameSurname());
+	        assertEquals("Anonim Yayıncılık", result.get(0).getPublisherName());
 	    }
 
 }
-*/

@@ -12,6 +12,7 @@ import com.ibrahimayhan.entities.Book;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>{
 	
+	//belirli yıldan sonraki kitapları sorgulamak için olan query
 	@Query("select b from Book b where b.publishYear > :year")
 	List<Book> findBooksPublishedAfter(@Param("year") int year);
 

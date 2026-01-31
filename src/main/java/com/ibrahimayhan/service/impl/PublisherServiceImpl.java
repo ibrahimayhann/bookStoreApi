@@ -23,6 +23,7 @@ public class PublisherServiceImpl implements IPublisherService{
 	private final PublisherRepository publisherRepository;
 	
 
+	//tüm publisherları db den çekip dto ya çevirip döner
 	@Override
 	public List<PublisherResponseDto> getAllPublisher() {
 		List<Publisher>  publisherList=publisherRepository.findAll();
@@ -42,7 +43,8 @@ public class PublisherServiceImpl implements IPublisherService{
 	}
 
 
-	
+	//yayınevini dönerken tüm bağlı booksları ve o booksların author unu döner 
+	//case pdf inde 2 tane istendiği için limiti 2 yaptım istersek hepsini de alabiliriz
 	@Override
 	public List<PublisherWithBooksResponseDto> getTwoPublishersWithBooksAndAuthors() {
 		
