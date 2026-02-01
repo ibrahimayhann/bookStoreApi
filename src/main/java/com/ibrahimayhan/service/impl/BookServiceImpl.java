@@ -52,6 +52,8 @@ public class BookServiceImpl implements IBookService{
 	//kullanıcıdan gelen string prefix ile kitap adına  göre filtreleme yapıp uygun kitapları döner 
 	@Override
 	public List<BookResponseDto> getBooksStartWith(String prefix) {
+		
+		if (prefix == null || prefix.isBlank()) return List.of();
 
 	    return bookRepository.findAll()
 	            .stream()
@@ -62,17 +64,21 @@ public class BookServiceImpl implements IBookService{
 
 	                BeanUtils.copyProperties(book, dto);
 
-	                if (book.getAuthor() != null && book.getPublisher()!= null) {
+	                if (book.getAuthor() != null  ) {
 	                    dto.setAuthorNameSurname(book.getAuthor().getAuthorNameSurname());
-	                    dto.setPublisherName(book.getPublisher().getPublisherName());
 	                }
+	                
+	                if(book.getPublisher()!= null) {
+	                   dto.setPublisherName(book.getPublisher().getPublisherName());
+	                   }
 
+	                
 	                return dto;
 	            })
 	            .toList();
 	}
 
-	//Kitap kaydeder , fazla şişirmemek ve okunabilirlik artırmak için 3 tane yardımcı metodu  var 
+	//Save book'u  fazla şişirmemek ve okunabilirlik artırmak için 3 tane yardımcı metodu  var 
 		@Override
 		public BookResponseDto saveBook(BookRequestDto request) {
 			
@@ -104,7 +110,7 @@ public class BookServiceImpl implements IBookService{
 	
 	
 	
-	//Kitap save ederken request ile gelen string authora göre author repostoryde arama yapan 
+	//Kitap save ederken request ile gelen string authora göre authorRepostoryde arama yapan 
 	//varsa eşleşen authoru , yoksa yeni author kaydedip kaydedilen authoru dönen yardımcı metot
 	private Author findOrCreateAuthor(String authorNameSurname) {
 		
@@ -154,7 +160,7 @@ public class BookServiceImpl implements IBookService{
 	
 	
 	
-	//kullanıcıdan id ve bookrequesttdto alarak güncelleyip dtoresponse book olarak döner
+	//kullanıcıdan id ve bookRequestDto alarak güncelleyip dtoresponse book olarak döner
 	@Transactional
 	@Override
 	public BookResponseDto updateBook(Long id, BookRequestDto requestDto) {
