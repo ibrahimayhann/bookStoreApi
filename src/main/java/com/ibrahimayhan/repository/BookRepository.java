@@ -2,6 +2,7 @@ package com.ibrahimayhan.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,14 @@ import com.ibrahimayhan.entities.Book;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>{
+	
+	  
+	@EntityGraph(attributePaths = {"author", "publisher"})
+	List<Book> findAll();
+	
+	//n+1 sorgu olmaması için  EntityGraph ile author/publisher'ı eager fetch olarak override ettim
+	@EntityGraph(attributePaths = {"author", "publisher"})
+	List<Book> findByTitleStartingWithIgnoreCase(String prefix);
 	
 	//belirli yıldan sonraki kitapları sorgulamak için olan query
 	@Query("select b from Book b where b.publishYear > :year")

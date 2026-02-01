@@ -55,10 +55,11 @@ public class BookServiceImpl implements IBookService{
 		
 		if (prefix == null || prefix.isBlank()) return List.of();
 
-	    return bookRepository.findAll()
+	    return bookRepository.findByTitleStartingWithIgnoreCase(prefix)
 	            .stream()
-	            .filter(book -> book.getTitle() != null)
-	            .filter(book -> book.getTitle().toUpperCase().startsWith(prefix.toUpperCase()))
+	            //.filter(book -> book.getTitle() != null)
+	            //.filter(book -> book.getTitle().toUpperCase().startsWith(prefix.toUpperCase()))
+	            //findAll dan vazgeçip repostoryde ıgnore case yaptığım için filter gerek kalmadı
 	            .map(book -> {
 	                BookResponseDto dto = new BookResponseDto();
 
@@ -78,7 +79,8 @@ public class BookServiceImpl implements IBookService{
 	            .toList();
 	}
 
-	//Save book'u  fazla şişirmemek ve okunabilirlik artırmak için 3 tane yardımcı metodu  var 
+		//Save book'u  fazla şişirmemek ve okunabilirlik artırmak için 3 tane yardımcı metodu  var 
+		@Transactional
 		@Override
 		public BookResponseDto saveBook(BookRequestDto request) {
 			
@@ -93,8 +95,8 @@ public class BookServiceImpl implements IBookService{
 			BookResponseDto bookResponseDto=new BookResponseDto();
 			BeanUtils.copyProperties(savedBook, bookResponseDto);
 			
-			bookResponseDto.setPublisherName(book.getPublisher().getPublisherName());
-			bookResponseDto.setAuthorNameSurname(book.getAuthor().getAuthorNameSurname());
+			bookResponseDto.setPublisherName(savedBook.getPublisher().getPublisherName());
+			bookResponseDto.setAuthorNameSurname(savedBook.getAuthor().getAuthorNameSurname());
 			return bookResponseDto;
 		}
 
@@ -147,8 +149,8 @@ public class BookServiceImpl implements IBookService{
 		List<BookResponseDto> dtoBooksList=new ArrayList<>();
 		
 		List<Book> books=bookRepository.findBooksPublishedAfter(year);
-		if(books.isEmpty()||books==null)
-			return null;
+		if(books==null || books.isEmpty())
+			return List.of();
 		for (Book book : books) {
 			BookResponseDto dtoBook=new BookResponseDto();
 			BeanUtils.copyProperties(book, dtoBook);
