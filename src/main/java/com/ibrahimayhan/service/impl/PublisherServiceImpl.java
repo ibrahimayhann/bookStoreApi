@@ -49,7 +49,8 @@ public class PublisherServiceImpl implements IPublisherService{
 	public List<PublisherWithBooksResponseDto> getTwoPublishersWithBooksAndAuthors() {
 		
 		List<Publisher> publisherListFromDb=publisherRepository.findPublisherWithBooksAndAuthors().stream().limit(2).toList();
-		
+		// tüm publisherlar geliyor ama limit 2 olduğu için 2 tane return ediliyor gereksiz veri çekmiş oluyoruz
+		//limiti kaldırıp metodu o şekilde kullanabileceğim için repostroyde müdahale etmedim 
 		List<PublisherWithBooksResponseDto> publisherDtoList=new ArrayList<>();
 		
 		for (Publisher publisher : publisherListFromDb) {

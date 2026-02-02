@@ -59,7 +59,7 @@ public class BookServiceImpl implements IBookService{
 	            .stream()
 	            //.filter(book -> book.getTitle() != null)
 	            //.filter(book -> book.getTitle().toUpperCase().startsWith(prefix.toUpperCase()))
-	            //findAll dan vazgeçip repostoryde ıgnore case yaptığım için filter gerek kalmadı
+	            //findAll dan kaçınarak repostoryde ıgnore case yaptığım için filter gerek kalmadı
 	            .map(book -> {
 	                BookResponseDto dto = new BookResponseDto();
 
@@ -122,7 +122,7 @@ public class BookServiceImpl implements IBookService{
 			Author author=new Author();
 			author.setAuthorNameSurname(normalizedName);
 			return authorRepository.save(author);
-		});
+		});//bu metot her 2 durumda da  bize bir author dönecek
 	}
 	
 	
@@ -168,7 +168,7 @@ public class BookServiceImpl implements IBookService{
 	public BookResponseDto updateBook(Long id, BookRequestDto requestDto) {
 		
 		Optional<Book> optioanlBook=bookRepository.findById(id);
-		if(optioanlBook.isEmpty()) {return null;}
+		if(optioanlBook.isEmpty()) {return null;}//notFoundexception fırlatılmalı
 		
 		Book bookFromDb=optioanlBook.get();
 		BeanUtils.copyProperties(requestDto,bookFromDb);
@@ -197,7 +197,7 @@ public class BookServiceImpl implements IBookService{
 	public void deleteBook(Long id) {
 		Book book = bookRepository.findById(id)
 	            .orElseThrow(() -> new EntityNotFoundException("Book not found"));
-
+	//globalexceptiondahandlerda  sadece validasyon hatalarını handle ettiğim için bu hata catch edilmeyecek
 	    bookRepository.delete(book);
 		
 	}
