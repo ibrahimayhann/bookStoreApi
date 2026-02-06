@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ibrahimayhan.controller.IPublisherController;
 import com.ibrahimayhan.dto.PublisherResponseDto;
-import com.ibrahimayhan.dto.PublisherWithBooksResponseDto;
+import com.ibrahimayhan.dto.PublisherDetailResponseDto;
 import com.ibrahimayhan.service.IPublisherService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class PublisherControllerImpl implements IPublisherController {
 
     @GetMapping("/with-books-authors")
 	@Override
-	public List<PublisherWithBooksResponseDto> getTwoPublishersWithBooksAndAuthors() {
+	public List<PublisherDetailResponseDto> getTwoPublishersWithBooksAndAuthors() {
     	return publisherService.getTwoPublishersWithBooksAndAuthors();
 	}
 }

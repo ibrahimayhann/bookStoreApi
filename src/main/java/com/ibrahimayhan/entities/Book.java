@@ -40,7 +40,7 @@ public class Book {
 	
 
 	@Column(name = "publish_year")
-	private int publishYear;
+	private Integer publishYear;
 	
 	
 

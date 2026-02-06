@@ -1,13 +1,12 @@
 package com.ibrahimayhan.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import com.ibrahimayhan.dto.AuthorResponseDto;
 import com.ibrahimayhan.entities.Author;
+import com.ibrahimayhan.mapper.AuthorMapper;
 import com.ibrahimayhan.repository.AuthorRepository;
 import com.ibrahimayhan.service.IAuthorService;
 
@@ -18,24 +17,17 @@ import lombok.RequiredArgsConstructor;
 public class AuthorServiceImpl implements IAuthorService {
 
 	private final AuthorRepository authorRepository;
+	
+	private final AuthorMapper authorMapper;
 
 	
 	@Override
 	public List<AuthorResponseDto> getAllAuthors() {
 		
 		List<Author> authorList=authorRepository.findAll();
+		if(authorList==null||authorList.isEmpty())
+			return List.of();
 		
-		List<AuthorResponseDto> authorDtoList=new ArrayList<>();
-		
-		if(authorList!=null && !authorList.isEmpty()) {
-			
-			for (Author author : authorList) {
-				AuthorResponseDto authorDto=new AuthorResponseDto();
-				BeanUtils.copyProperties(author, authorDto);
-				authorDtoList.add(authorDto);
-			}
-		}
-		
-		return authorDtoList;
+		return authorMapper.toResponseDtoList(authorList);
 	}
 }

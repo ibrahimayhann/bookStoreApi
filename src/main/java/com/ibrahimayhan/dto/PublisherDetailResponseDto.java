@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PublisherWithBooksResponseDto {
+public class PublisherDetailResponseDto {
 
 	private Long publisherId;
 	

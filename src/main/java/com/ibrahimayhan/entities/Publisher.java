@@ -33,5 +33,5 @@ public class Publisher {
 	private String publisherName;
 	
 	@OneToMany(mappedBy = "publisher")
-	private List<Book> books;
+	private List<Book> books;//new Arraylist eklenmeli serviste nul kontrolünden kaçınmak için
 }

@@ -30,7 +30,7 @@ public class BookRequestDto {
 	private String publisherName;
 	
 	
-	private int publishYear;
+	private Integer publishYear;
 	
 	@NotEmpty(message = "Author name cannot be emty!")
 	private String authorNameSurname;
