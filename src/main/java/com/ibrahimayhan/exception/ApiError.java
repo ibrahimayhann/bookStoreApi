@@ -15,6 +15,10 @@ public class ApiError<T> {
 	
 	private Date errorTime;
 	
+	private String code;   
+	
+	private String path;
+	
 	private T errors;
 }
 //exception handlerda kullanıcıya belirli formatta response dönerken bu generic sınıfın nesnesini oluşturup response ettim
