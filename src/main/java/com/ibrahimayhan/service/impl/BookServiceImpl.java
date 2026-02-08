@@ -1,7 +1,6 @@
 package com.ibrahimayhan.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import com.ibrahimayhan.dto.BookRequestDto;
@@ -9,13 +8,13 @@ import com.ibrahimayhan.dto.BookResponseDto;
 import com.ibrahimayhan.entities.Author;
 import com.ibrahimayhan.entities.Book;
 import com.ibrahimayhan.entities.Publisher;
+import com.ibrahimayhan.exception.BaseException;
+import com.ibrahimayhan.exception.ErrorCode;
 import com.ibrahimayhan.mapper.BookMapper;
 import com.ibrahimayhan.repository.AuthorRepository;
 import com.ibrahimayhan.repository.BookRepository;
 import com.ibrahimayhan.repository.PublisherRepository;
 import com.ibrahimayhan.service.IBookService;
-
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +28,7 @@ public class BookServiceImpl implements IBookService{
 	
 	private final BookMapper bookMapper;
 
-
 	
-	//tüm kitapları döner
 	@Override
 	public List<BookResponseDto> getAllBooks() {
 				
@@ -40,7 +37,7 @@ public class BookServiceImpl implements IBookService{
 	
 	
 	
-	//kullanıcıdan gelen string prefix ile kitap adına  göre filtreleme yapıp uygun kitapları döner 
+	//kullanıcıdan gelen string prefix ile kitap adına göre filtreleme yapıp uygun kitapları döner 
 	@Override
 	public List<BookResponseDto> getBooksStartWith(String prefix) {
 		
@@ -112,7 +109,7 @@ public class BookServiceImpl implements IBookService{
 	
 
 	
-	//kullanıcıdan gelen year a göre filtreleme yapıp uygun booksları döner
+	//clientten gelen  year a göre filtreleme yapıp döner
 	@Override
 	public List<BookResponseDto> getBooksPublishedAfter(int year) {
 				
@@ -126,24 +123,23 @@ public class BookServiceImpl implements IBookService{
 	
 	
 	
-	//kullanıcıdan id ve bookRequestDto alarak güncelleyip dtoresponse book olarak döner
 	@Transactional
 	@Override
 	public BookResponseDto updateBook(Long id, BookRequestDto requestDto) {
+		Book book=bookRepository.findById(id).orElseThrow(()->new BaseException(ErrorCode.BOOK_NOT_FOUND));
 		
-		Optional<Book> optioanlBook=bookRepository.findById(id);
-		if(optioanlBook.isEmpty()) {return null;}//notFoundexception fırlatılmalı
-		
-		Book bookFromDb=optioanlBook.get();
-		bookMapper.patchEntity(requestDto, bookFromDb);
+		bookMapper.patchEntity(requestDto, book);
 		
 		Author author=findOrCreateAuthor(requestDto.getAuthorNameSurname());
-		bookFromDb.setAuthor(author);
+		book.setAuthor(author);
 
 		Publisher publisher=findOrCreatePublisher(requestDto.getPublisherName());
-		bookFromDb.setPublisher(publisher);
+		book.setPublisher(publisher);
 				
-		return bookMapper.toDto(bookRepository.save(bookFromDb));
+		//return bookMapper.toDto(bookRepository.save(book));//save metodunu çağırmasak da save eder çünkü transactional 
+		//içinde book nesnemiz managed entity olur db den gelip değişiklik yapıldığı için transactional kapanırken otomaik save edilir
+		return bookMapper.toDto(book);
+
 	}
 
 	
@@ -151,8 +147,7 @@ public class BookServiceImpl implements IBookService{
 	@Override
 	public void deleteBook(Long id) {
 		Book book = bookRepository.findById(id)
-	            .orElseThrow(() -> new EntityNotFoundException("Book not found"));
-	//globalexceptiondahandlerda  sadece validasyon hatalarını handle ettiğim için bu hata catch edilmeyecek
+	            .orElseThrow(() -> new BaseException(ErrorCode.BOOK_NOT_FOUND));
 	    bookRepository.delete(book);
 		
 	}
